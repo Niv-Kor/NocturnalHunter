@@ -2,15 +2,33 @@
 
 public class TerrainGlider : MonoBehaviour
 {
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float hoverHeight = .1f;
+    [Tooltip("Minimum resistance to the floor on relatively steep slopes.")]
+    [SerializeField] private float minResistance = 0;
 
-    [SerializeField] private float minResistance = 10;
-    [SerializeField] private float maxResistance = 0;
-    [SerializeField] private float maxSlopeAngle = 90;
+    [Tooltip("Maximum resistance to the floor when climbing slopes.")]
+    [SerializeField] private float maxResistance = 10;
+
+    [Tooltip("An angle that's considered to be the most steep.")]
+    [SerializeField] [Range(1, 90f)] private float maxSlopeAngle = 90;
+    
+    private readonly float LERP_STEP_MULTIPLIER = 10;
 
     private Rigidbody rigidBody;
     private RigidbodyPlayerMovement playerMovement;
+
+    public float SteepPercent {
+        get {
+            //get current pitch angle of the player
+            float pitchAngle = transform.eulerAngles.x;
+            pitchAngle = (pitchAngle > 180) ? pitchAngle - 360 : pitchAngle;
+
+            //if the player is climbing he is less vulnerable to slipping, and more resistance is being applied
+            bool climbing = pitchAngle < 0 && playerMovement.IsWalking;
+            int pitchDirection = climbing ? 1 : -1;
+            float absAngle = Mathf.Abs(pitchAngle);
+            return pitchDirection * Mathf.Clamp(absAngle / maxSlopeAngle * 100, 0, 100);
+        }
+    }
 
     private void Start() {
         this.rigidBody = GetComponent<Rigidbody>();
@@ -18,58 +36,32 @@ public class TerrainGlider : MonoBehaviour
     }
 
     private void Update() {
-        //Hover();
-        //if (!playerMovement.IsRotating()) AlignWithTerrain();
-        rigidBody.drag = Mathf.Lerp(rigidBody.drag, CalcGlideResistance(), 10 * Time.deltaTime);
+        if (!playerMovement.InMidAir) ChangeDragValue();
     }
 
+    /// <summary>
+    /// Change the drag value according to the player's position.
+    /// </summary>
+    private void ChangeDragValue() {
+        float step = LERP_STEP_MULTIPLIER * Time.deltaTime;
+        float resistance = CalcGlideResistance();
+        rigidBody.drag = Mathf.Lerp(rigidBody.drag, resistance, step);
+    }
+
+    /// <summary>
+    /// Calculate the drag value of the player's rigidbody,
+    /// relative to his position on the terrain's steep slopes.
+    /// Low drag value results in slipping down the slope,
+    /// while a higher one results in climbing more slowly upwards.
+    /// </summary>
+    /// <returns>The player's correct drag value relative to his position.</returns>
     private float CalcGlideResistance() {
-        float pitchAngle = transform.eulerAngles.x;
-        pitchAngle = (pitchAngle > 180) ? pitchAngle - 360 : pitchAngle;
-        float absAngle = Mathf.Abs(pitchAngle);
-        float pitchPercent = Mathf.Clamp(absAngle / maxSlopeAngle * 100, 0, 100);
-        float resistance = (pitchPercent * (maxResistance - minResistance) / 100) + minResistance;
+        //calculate the position of the player's pitch on a -100% to 100% specturm
+        float steepPercent = SteepPercent;
+        int spectrumMinimum = -100, spectrumMaximum = 100;
+        float percentOnSpectrum = (steepPercent - spectrumMinimum) / (spectrumMaximum - spectrumMinimum) * 100;
 
-        if (playerMovement.IsWalking() && pitchAngle < 0) return (100 + pitchPercent) * resistance / 100;
-        else return (maxResistance + minResistance) - resistance;
+        //calculate the actual resistance value relative to the point on the spectrum
+        return percentOnSpectrum * (maxResistance - minResistance) / 100 + minResistance;
     }
-
-    /*private void AlignWithTerrain() {
-        RaycastHit[] hits = new RaycastHit[feet.Length];
-
-        for (int i = 0; i < hits.Length; i++) {
-            Vector3 position = feet[i].transform.position;
-            Physics.Raycast(position, Vector3.down, out hits[i], groundLayer);
-        }
-
-        for (int i = 0; i < hits.Length; i++) {
-            float groundDistY = hits[i].distance;
-
-            if (groundDistY > hoverHeight) {
-                Foot footComponent = feet[i].GetComponent<Foot>();
-                Vector3 direction = footComponent.GetGroundedVector();
-                float groundDistX = footComponent.RaycastOppositeDirection().distance;
-                float alpha = Mathf.Atan(groundDistY / groundDistX) * Mathf.Rad2Deg;
-                Vector3 currentRot = transform.eulerAngles;
-                Vector3 targetRot = currentRot + direction * alpha * 2;
-                Vector3 stepRot = Vector3.Lerp(currentRot, targetRot, Time.deltaTime);
-
-                transform.rotation = Quaternion.Euler(stepRot);
-            }
-        }
-
-        //align down
-        *//*Vector3 normalizedHit = Vector3.zero;
-        foreach (RaycastHit hit in hits) normalizedHit += hit.normal;
-
-        *//*Vector3 backupForward = transform.forward;
-        Vector3 backupUp = transform.up;
-        Vector3 upTransform = Vector3.Lerp(backupUp, normalizedHit.normalized, Time.deltaTime);
-
-        transform.up = new Vector3(upTransform.x, backupUp.y, upTransform.z);*//*
-        //transform.forward = backupForward;
-
-        Vector3 unitVector = normalizedHit.normalized;
-        transform.up = unitVector;*//*
-    }*/
 }

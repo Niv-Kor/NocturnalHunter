@@ -2,58 +2,69 @@
 
 public class RigidbodyPlayerMovement : MonoBehaviour
 {
-    private class HardVector
-    {
-        public static HardVector NONE = new HardVector(0);
-        public static HardVector NEGATIVE = new HardVector(-1);
-        public static HardVector POSITIVE = new HardVector(1);
+    [Tooltip("The player's avatar.")]
+    [SerializeField] private GameObject avatar;
 
-        private int vector;
+    [Tooltip("The base of the cameras.")]
+    [SerializeField] private GameObject cameraBase;
 
-        private HardVector(int vector) {
-            this.vector = vector;
-        }
-
-        public void Oppose() { vector *= -1; }
-
-        public int Vector {
-            get { return vector; }
-            set { vector = Mathf.Clamp(value, -1, 1); }
-        }
-
-        public static HardVector Harden(float vector) {
-            if (vector > 0) return POSITIVE;
-            else if (vector < 0) return NEGATIVE;
-            else return NONE;
-        }
-    }
-
-    [SerializeField] private GameObject avatar, cameraBase;
+    [Tooltip("The avatars's legs object (containing all its legs as children).")]
     [SerializeField] private GameObject legs;
+
+    [Tooltip("Layers of objects that can be stepped on.")]
     [SerializeField] private LayerMask groundLayer;
+
+    [Header("Force")]
+    
+    [Tooltip("The speed of regular walking.")]
     [SerializeField] private float walkSpeed = 15;
+
+    [Tooltip("The speed of running.")]
     [SerializeField] private float runSpeed = 30;
-    [SerializeField] private float minRotation = 2;
-    [SerializeField] private float maxRotation = 12;
+
+    [Tooltip("Minimum speed of rotation.")]
+    [SerializeField] private float minRotationSpeed = 2;
+
+    [Tooltip("Maximum speed of rotation.")]
+    [SerializeField] private float maxRotationSpeed = 12;
+
+    [Tooltip("The minimum force being applied on the player when jumping.")]
+    [SerializeField] private float minJumpForce = 50;
+
+    [Tooltip("The maximum force being applied on the player when jumping.")]
+    [SerializeField] private float maxJumpForce = 100;
 
     private readonly string HORIZONTAL_AXIS = "Horizontal";
     private readonly string VERTICAL_AXIS = "Vertical";
-    private readonly float SHARP_PITCH_ANGLE = 30;
+    private readonly float SHARP_PITCH_ANGLE = 70;
     private readonly float CASUAL_ROTATION_RATE = .5f;
+    private readonly float INITIAL_ALIGNMENT_TIME = .5f;
 
     private Rigidbody rigidBody;
     private GameObject[] feet;
+    private TerrainGlider terrainGlider;
     private Vector3 turnDirection;
-    private float defaultYaw, lastMovement;
-    private bool rotateTowards, isWalking, doubleRotRate;
+    private float defaultYaw, lastMovement, initialTimer;
+    private bool rotateTowards, isWalking, midAir;
+    private bool doubleRotRate, initialTurn;
+
+    public bool IsWalking { get { return isWalking; } set { } }
+
+    public bool IsRotating { get { return rotateTowards; } set { } }
+
+    public bool InMidAir { get { return midAir; } set { } }
 
     private void Start() {
         this.rigidBody = GetComponent<Rigidbody>();
+        this.terrainGlider = GetComponent<TerrainGlider>();
         this.defaultYaw = avatar.transform.eulerAngles.y;
         this.lastMovement = 0;
         this.rotateTowards = false;
         this.turnDirection = Vector3.zero;
+        this.initialTimer = 0;
         this.feet = new GameObject[legs.transform.childCount];
+
+        transform.forward = Vector3.zero;
 
         for (int i = 0; i < feet.Length; i++)
             feet[i] = legs.transform.GetChild(i).gameObject;
@@ -65,13 +76,27 @@ public class RigidbodyPlayerMovement : MonoBehaviour
         float verInput = Input.GetAxis(VERTICAL_AXIS);
         float currentMovement = Mathf.Max(Mathf.Abs(horInput), Mathf.Abs(verInput));
         float inputVolume = (currentMovement > lastMovement) ? 1 : Mathf.Max(Mathf.Abs(verInput), Mathf.Abs(horInput));
-
         float movementSpeed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
+
         Move(horInput, verInput, inputVolume, movementSpeed);
         Turn(turnDirection);
 
+        //save movement parameters for later use
         isWalking = (verInput != 0 || horInput != 0) && currentMovement >= lastMovement;
         lastMovement = Mathf.Max(Mathf.Abs(horInput), Mathf.Abs(verInput));
+
+        if (InMidAir) rigidBody.drag = 0;
+
+        if (!initialTurn) initialTimer += Time.deltaTime;
+    }
+
+    /// <summary>
+    /// Perform a jump by applying force upwards.
+    /// </summary>
+    public void Jump() {
+        float steepPercent = (terrainGlider != null) ? Mathf.Abs(terrainGlider.SteepPercent) : 50;
+        float jumpForce = steepPercent * (maxJumpForce - minJumpForce) / 100 + minJumpForce;
+        rigidBody.AddForce(transform.up * jumpForce);
     }
 
     /// <summary>
@@ -82,12 +107,13 @@ public class RigidbodyPlayerMovement : MonoBehaviour
     /// <param name="volume">How hard is the specified direction (ranged 0 to 1)</param>
     /// <param name="speed">The movement speed</param>
     private void Move(float x, float y, float volume, float speed) {
-        Vector3 groundNormal = CalcGroundNormal();
+        Vector3 groundNormal = CalcGroundNormal(out midAir);
         Vector3 forward = Vector3.Cross(groundNormal, -cameraBase.transform.right);
         Vector3 right = Vector3.Cross(groundNormal, cameraBase.transform.forward);
 
-        //compress the turn direction if it's too radical (180 degrees) - swap x and y values
+        //compress the turn direction if it's too radical (180 degrees)
         if (IsOppositeDirection(transform.forward, (forward * y + right * x).normalized)) {
+            //swap x and y values and compress the direction by 90 degrees
             float temp = x;
             x = y;
             y = temp;
@@ -96,26 +122,47 @@ public class RigidbodyPlayerMovement : MonoBehaviour
         }
 
         //asign correct and compressed value to the next turn direction
-        turnDirection = (forward * y + right * x).normalized;
-        if (turnDirection != Vector3.zero) rotateTowards = true;
+        if (!initialTurn) {
+            turnDirection = (forward + right).normalized;
+            rotateTowards = true;
+        }
+        else {
+            turnDirection = (forward * y + right * x).normalized;
+            if (turnDirection != Vector3.zero) rotateTowards = true;
+        }
 
         //move towards the desired direction
-        if (VelocitySmallerThan(10)) {
+        if (!InMidAir && AbsoluteSmallerThan(rigidBody.velocity, 10)) {
             Vector3 moveDirection = (forward * y + right * x).normalized;
             rigidBody.AddForce(moveDirection * volume * speed);
         }
     }
 
-    private bool VelocitySmallerThan(float max) {
-        float x = Mathf.Abs(rigidBody.velocity.x);
-        float y = Mathf.Abs(rigidBody.velocity.y);
-        float z = Mathf.Abs(rigidBody.velocity.z);
+    /// <summary>
+    /// Check if a vector's x, y and z absolute values are smaller than a peremeter n (exclusive).
+    /// </summary>
+    /// <param name="n">Maximum allowed value (exclusive)</param>
+    /// <returns>True is all absolute values of the vetor 'a' are smaller than 'n'.</returns>
+    private bool AbsoluteSmallerThan(Vector3 a, float n) {
+        float x = Mathf.Abs(a.x);
+        float y = Mathf.Abs(a.y);
+        float z = Mathf.Abs(a.z);
 
-        return x < max && y < max && z < max;
+        return x < n && y < n && z < n;
     }
 
+    /// <summary>
+    /// Check if one vector's x, y and z values have the opposite sign of the other vector's values.
+    /// Each value in vector 'a' has to have the opposite sign to its equivalent in vector 'b'.
+    /// </summary>
+    /// <param name="a">First vector to check</param>
+    /// <param name="b">Second vector to check against</param>
+    /// <returns>True if both vectors are opposite to eachother.</returns>
     private bool IsOppositeDirection(Vector3 a, Vector3 b) {
-        return a.x * b.x < 0 && a.y * b.y < 0 && a.z * b.z < 0;
+        bool xOppose = a.x == 0 || b.x == 0 || a.x * b.x < 0;
+        bool yOppose = a.y == 0 || b.y == 0 || a.y * b.y < 0;
+        bool zOppose = a.z == 0 || b.z == 0 || a.z * b.z < 0;
+        return xOppose && yOppose && zOppose;
     }
 
     /// <summary>
@@ -124,9 +171,11 @@ public class RigidbodyPlayerMovement : MonoBehaviour
     /// <param name="direction">The direction the player supposed to be facing</param>
     private void Turn(Vector3 direction) {
         //cancel rotation
-        if (direction == Vector3.zero || !rotateTowards) {
+        if (direction == Vector3.zero || !rotateTowards || initialTimer >= INITIAL_ALIGNMENT_TIME) {
             doubleRotRate = false;
             rotateTowards = false;
+            initialTurn = true;
+            initialTimer = 0;
             return;
         }
 
@@ -138,16 +187,21 @@ public class RigidbodyPlayerMovement : MonoBehaviour
         float targetY = fullDirection.eulerAngles.y - defaultYaw;
         float angleDistance = Mathf.Abs(Mathf.DeltaAngle(currentY, targetY));
         float rotationPercent = Mathf.Clamp((angleDistance - 10) / (180 - 10) * 100, 0, 100);
+
+        //check if the slope is very sharp
+        float pitchAngle = transform.eulerAngles.x;
+        pitchAngle = (pitchAngle > 180) ? pitchAngle - 360 : pitchAngle;
+        bool slipperyFall = pitchAngle > SHARP_PITCH_ANGLE;
         float rotationRate;
 
         //rotation is insignificant
-        if (rotationPercent < .1f && Mathf.Abs(transform.eulerAngles.x) < SHARP_PITCH_ANGLE) {
+        if (rotationPercent < .1f && !slipperyFall) {
             rotationRate = CASUAL_ROTATION_RATE;
             doubleRotRate = false;
         }
         else {
-            rotationRate = (rotationPercent * (maxRotation - minRotation) / 100) + minRotation;
-            if (doubleRotRate) rotationRate = Mathf.Clamp(rotationRate * 2, minRotation, maxRotation);
+            rotationRate = (rotationPercent * (maxRotationSpeed - minRotationSpeed) / 100) + minRotationSpeed;
+            if (doubleRotRate) rotationRate = Mathf.Clamp(rotationRate * 2, minRotationSpeed, maxRotationSpeed);
         }
 
         //rotate
@@ -157,21 +211,28 @@ public class RigidbodyPlayerMovement : MonoBehaviour
         transform.rotation = nextRotation;
     }
 
-    private Vector3 CalcGroundNormal() {
+    /// <summary>
+    /// Calculate the normal vector of the exact area that the player is currently standing on.
+    /// </summary>
+    /// <param name="midAir">Whether the avatar is floating in the air</param>
+    /// <returns>The normal vector of the current area.</returns>
+    private Vector3 CalcGroundNormal(out bool midAir) {
         RaycastHit[] hits = new RaycastHit[feet.Length];
         Vector3 normalizedHit = Vector3.zero;
+        midAir = true;
 
         for (int i = 0; i < hits.Length; i++) {
             Transform footTransform = feet[i].transform;
             Vector3 position = footTransform.position;
             Physics.Raycast(position, -footTransform.up, out hits[i], groundLayer);
+
+            //check if current foot is touching the floor
+            Foot footComponent = feet[i].GetComponent<Foot>();
+            if (midAir && footComponent.IsGrounded(groundLayer)) midAir = false;
         }
 
+        //calculate the average value for all of the avatar's legs
         foreach (RaycastHit hit in hits) normalizedHit += hit.normal;
         return normalizedHit.normalized;
     }
-
-    public bool IsWalking() { return isWalking; }
-
-    public bool IsRotating() { return rotateTowards; }
 }

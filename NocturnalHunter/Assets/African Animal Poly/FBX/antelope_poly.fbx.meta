@@ -1,0 +1,191 @@
+fileFormatVersion: 2
+guid: db13ee26cd73c7a47884c3d94cbd0d1b
+timeCreated: 1566122688
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Antelope_LOD3
+    100002: //RootNode
+    100004: Armature_antelope
+    100006: Base1
+    100008: Base2
+    100010: Ear.L
+    100012: Ear.R
+    100014: Head1
+    100016: Head2
+    100018: Hoof_Back.L
+    100020: Hoof_Back.R
+    100022: Hoof_Front.L
+    100024: Hoof_Front.R
+    100026: Knee_IK.L
+    100028: Knee_IK.R
+    100030: Leg_Back_1.L
+    100032: Leg_Back_1.R
+    100034: Leg_Back_2.L
+    100036: Leg_Back_2.R
+    100038: Leg_Back_3.L
+    100040: Leg_Back_3.R
+    100042: Leg_Back_4.L
+    100044: Leg_Back_4.R
+    100046: Leg_Back_IK.L
+    100048: Leg_Back_IK.R
+    100050: Leg_Front_1.L
+    100052: Leg_Front_1.R
+    100054: Leg_Front_2.L
+    100056: Leg_Front_2.R
+    100058: Leg_Front_3.L
+    100060: Leg_Front_3.R
+    100062: Leg_Front_4.L
+    100064: Leg_Front_4.R
+    100066: Leg_Front_IK.L
+    100068: Leg_Front_IK.R
+    100070: Lid.L
+    100072: Lid.R
+    100074: Mouth
+    100076: Neck1
+    100078: Neck2
+    100080: Root
+    100082: Spine1
+    100084: Spine2
+    100086: Spine3
+    100088: Spine4
+    100090: Spine5
+    100092: Spine_Tail
+    100094: Tail1
+    100096: Tail2
+    100098: Tail3
+    400000: Antelope_LOD3
+    400002: //RootNode
+    400004: Armature_antelope
+    400006: Base1
+    400008: Base2
+    400010: Ear.L
+    400012: Ear.R
+    400014: Head1
+    400016: Head2
+    400018: Hoof_Back.L
+    400020: Hoof_Back.R
+    400022: Hoof_Front.L
+    400024: Hoof_Front.R
+    400026: Knee_IK.L
+    400028: Knee_IK.R
+    400030: Leg_Back_1.L
+    400032: Leg_Back_1.R
+    400034: Leg_Back_2.L
+    400036: Leg_Back_2.R
+    400038: Leg_Back_3.L
+    400040: Leg_Back_3.R
+    400042: Leg_Back_4.L
+    400044: Leg_Back_4.R
+    400046: Leg_Back_IK.L
+    400048: Leg_Back_IK.R
+    400050: Leg_Front_1.L
+    400052: Leg_Front_1.R
+    400054: Leg_Front_2.L
+    400056: Leg_Front_2.R
+    400058: Leg_Front_3.L
+    400060: Leg_Front_3.R
+    400062: Leg_Front_4.L
+    400064: Leg_Front_4.R
+    400066: Leg_Front_IK.L
+    400068: Leg_Front_IK.R
+    400070: Lid.L
+    400072: Lid.R
+    400074: Mouth
+    400076: Neck1
+    400078: Neck2
+    400080: Root
+    400082: Spine1
+    400084: Spine2
+    400086: Spine3
+    400088: Spine4
+    400090: Spine5
+    400092: Spine_Tail
+    400094: Tail1
+    400096: Tail2
+    400098: Tail3
+    4300000: Antelope_LOD3
+    7400000: Armature_antelope|Attack_1
+    7400002: Armature_antelope|death
+    7400004: Armature_antelope|eat
+    7400006: Armature_antelope|Hit_Back
+    7400008: Armature_antelope|Hit_front
+    7400010: Armature_antelope|Hit_midle
+    7400012: Armature_antelope|Idle_1
+    7400014: Armature_antelope|Idle_2
+    7400016: Armature_antelope|Jump
+    7400018: Armature_antelope|Run_1
+    7400020: Armature_antelope|Sleep
+    7400022: Armature_antelope|Walk
+    7400024: Armature_antelope|Walk_back
+    9500000: //RootNode
+    13700000: Antelope_LOD3
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

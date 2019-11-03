@@ -1,0 +1,190 @@
+fileFormatVersion: 2
+guid: 1491fd479ab990e438e1533d2ed1dd6e
+timeCreated: 1566122681
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Armature
+    100002: base1
+    100004: base2
+    100006: body
+    100008: body1
+    100010: body2
+    100012: body3
+    100014: ear.l
+    100016: ear.r
+    100018: ear2.l
+    100020: ear2.r
+    100022: eye.l
+    100024: eye.r
+    100026: feetB.l
+    100028: feetB.r
+    100030: feetF.l
+    100032: feetF.r
+    100034: head
+    100036: legB1.l
+    100038: legB1.r
+    100040: legB2.l
+    100042: legB2.r
+    100044: legB2IK.l
+    100046: legB2IK.r
+    100048: legB3.l
+    100050: legB3.r
+    100052: legF1.l
+    100054: legF1.r
+    100056: legF2.l
+    100058: legF2.r
+    100060: legF3.l
+    100062: legF3.r
+    100064: legF3IK.l
+    100066: legF3IK.r
+    100068: Leopard_LOD3
+    100070: //RootNode
+    100072: mouth1
+    100074: mouth2
+    100076: mouth2.001
+    100078: neck
+    100080: tail1
+    100082: tail2
+    100084: tail3
+    100086: tail4
+    100088: tail5
+    400000: Armature
+    400002: base1
+    400004: base2
+    400006: body
+    400008: body1
+    400010: body2
+    400012: body3
+    400014: ear.l
+    400016: ear.r
+    400018: ear2.l
+    400020: ear2.r
+    400022: eye.l
+    400024: eye.r
+    400026: feetB.l
+    400028: feetB.r
+    400030: feetF.l
+    400032: feetF.r
+    400034: head
+    400036: legB1.l
+    400038: legB1.r
+    400040: legB2.l
+    400042: legB2.r
+    400044: legB2IK.l
+    400046: legB2IK.r
+    400048: legB3.l
+    400050: legB3.r
+    400052: legF1.l
+    400054: legF1.r
+    400056: legF2.l
+    400058: legF2.r
+    400060: legF3.l
+    400062: legF3.r
+    400064: legF3IK.l
+    400066: legF3IK.r
+    400068: Leopard_LOD3
+    400070: //RootNode
+    400072: mouth1
+    400074: mouth2
+    400076: mouth2.001
+    400078: neck
+    400080: tail1
+    400082: tail2
+    400084: tail3
+    400086: tail4
+    400088: tail5
+    4300000: Leopard_LOD3
+    7400000: Armature|attack_1
+    7400002: Armature|attack_2
+    7400004: Armature|attack_3
+    7400006: Armature|die
+    7400008: Armature|eat
+    7400010: Armature|hit_back_left
+    7400012: Armature|hit_back_right
+    7400014: Armature|hit_front_left
+    7400016: Armature|hit_front_right
+    7400018: Armature|hit_middle
+    7400020: Armature|idle_1
+    7400022: Armature|idle_look_left
+    7400024: Armature|idle_look_right
+    7400026: Armature|idle_sleep
+    7400028: Armature|idle_smell
+    7400030: Armature|jump
+    7400032: Armature|run
+    7400034: Armature|sleep_end
+    7400036: Armature|sleep_start
+    7400038: Armature|walk
+    7400040: Armature|walk_back
+    7400042: Armature|walk_stels
+    9500000: //RootNode
+    13700000: Leopard_LOD3
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

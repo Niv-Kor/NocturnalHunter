@@ -1,0 +1,182 @@
+fileFormatVersion: 2
+guid: eabbb112d49d136448589906aae11b7e
+timeCreated: 1566122690
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Armature_Elephant
+    100002: Base1
+    100004: Base2
+    100006: Ear_1.L
+    100008: Ear_1.R
+    100010: Ear_2.L
+    100012: Ear_2.R
+    100014: Ear_3.L
+    100016: Ear_3.R
+    100018: Elephant_LOD3
+    100020: //RootNode
+    100022: Head
+    100024: Leg_B_1.L
+    100026: Leg_B_1.R
+    100028: Leg_B_2.L
+    100030: Leg_B_2.R
+    100032: Leg_B_3.L
+    100034: Leg_B_3.R
+    100036: Leg_B_IK.L
+    100038: Leg_B_IK.R
+    100040: Leg_F_1.L
+    100042: Leg_F_1.R
+    100044: Leg_F_2.L
+    100046: Leg_F_2.R
+    100048: Leg_F_3.L
+    100050: Leg_F_3.R
+    100052: Leg_F_IK.L
+    100054: Leg_F_IK.R
+    100056: Lid.L
+    100058: Lid.R
+    100060: Mouth
+    100062: Neck
+    100064: Nose_1
+    100066: Nose_2
+    100068: Nose_3
+    100070: Nose_4
+    100072: Nose_5
+    100074: Nose_6
+    100076: Root
+    100078: spine_1
+    100080: spine_2
+    100082: spine_3
+    100084: spine_4
+    100086: spine_5
+    100088: Tail_1
+    100090: Tail_2
+    400000: Armature_Elephant
+    400002: Base1
+    400004: Base2
+    400006: Ear_1.L
+    400008: Ear_1.R
+    400010: Ear_2.L
+    400012: Ear_2.R
+    400014: Ear_3.L
+    400016: Ear_3.R
+    400018: Elephant_LOD3
+    400020: //RootNode
+    400022: Head
+    400024: Leg_B_1.L
+    400026: Leg_B_1.R
+    400028: Leg_B_2.L
+    400030: Leg_B_2.R
+    400032: Leg_B_3.L
+    400034: Leg_B_3.R
+    400036: Leg_B_IK.L
+    400038: Leg_B_IK.R
+    400040: Leg_F_1.L
+    400042: Leg_F_1.R
+    400044: Leg_F_2.L
+    400046: Leg_F_2.R
+    400048: Leg_F_3.L
+    400050: Leg_F_3.R
+    400052: Leg_F_IK.L
+    400054: Leg_F_IK.R
+    400056: Lid.L
+    400058: Lid.R
+    400060: Mouth
+    400062: Neck
+    400064: Nose_1
+    400066: Nose_2
+    400068: Nose_3
+    400070: Nose_4
+    400072: Nose_5
+    400074: Nose_6
+    400076: Root
+    400078: spine_1
+    400080: spine_2
+    400082: spine_3
+    400084: spine_4
+    400086: spine_5
+    400088: Tail_1
+    400090: Tail_2
+    4300000: Elephant_LOD3
+    7400000: Armature_Elephant|Attack
+    7400002: Armature_Elephant|Death
+    7400004: Armature_Elephant|Eat
+    7400006: Armature_Elephant|Hit_Back
+    7400008: Armature_Elephant|Hit_Front
+    7400010: Armature_Elephant|Hit_Midle
+    7400012: Armature_Elephant|Idle_1
+    7400014: Armature_Elephant|Idle_2
+    7400016: Armature_Elephant|Run
+    7400018: Armature_Elephant|Sleep
+    7400020: Armature_Elephant|Walk
+    7400022: Armature_Elephant|Walk_Back
+    9500000: //RootNode
+    13700000: Elephant_LOD3
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
