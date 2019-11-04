@@ -29,10 +29,17 @@ public class PlayerControl : MonoBehaviour
         else CancelMovement();
     }
 
+    /// <summary>
+    /// Consider the avatar as grounded or in mid air.
+    /// </summary>
+    /// <param name="flag">True to consider grounded</param>
     public void ConsiderGrounded(bool flag) {
         animalPlayer.Ground(flag);
     }
 
+    /// <summary>
+    /// Animate the 'Movement' layer of the state machine.
+    /// </summary>
     private void Move() {
         bool movement = playerMovement.IsWalking;
         animalPlayer.Walk(movement);
@@ -44,20 +51,30 @@ public class PlayerControl : MonoBehaviour
         else CancelMovement();
     }
 
-    private void CancelMovement() {
-        animalPlayer.Walk(false);
-        animalPlayer.Run(false);
-        animalPlayer.Creep(false);
-    }
-
+    /// <summary>
+    /// Animate the 'Jump' layer of the state machine.
+    /// </summary>
     private void Jump() {
         if (playerMovement.IsGrounded && !MovementLocked && !JumpLocked && Input.GetMouseButtonDown(2)) {
-            animalPlayer.Jump(); ///TEMP binding
+            animalPlayer.Jump(true); ///TEMP binding
             playerMovement.Jump();
         }
     }
 
+    /// <summary>
+    /// Animate the 'Attack' layer of the state machine.
+    /// </summary>
     private void Attack() {
-        if (Input.GetMouseButtonDown(0)) animalPlayer.Attack(); ///TEMP binding
+        if (Input.GetMouseButtonDown(0) && !animalPlayer.IsAnimating(AnimalPlayer.AnimationType.Attack))
+            animalPlayer.Attack(true); ///TEMP binding
+    }
+
+    /// <summary>
+    /// Cancel all movement animations and return to idle states.
+    /// </summary>
+    private void CancelMovement() {
+        animalPlayer.Walk(false);
+        animalPlayer.Run(false);
+        animalPlayer.Creep(false);
     }
 }

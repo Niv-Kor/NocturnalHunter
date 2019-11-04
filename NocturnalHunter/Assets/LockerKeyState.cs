@@ -12,10 +12,16 @@ public class LockerKeyState : StateMachineBehaviour
     [Tooltip("Lock or unlock the parameter during transition to this state,\n"
            + "right before entering it completely.")]
     [SerializeField] private bool toggleDuringTransition;
-    
+
+    [Tooltip("Lock or unlock the parameter after a fixed percentage of animation time.")]
+    [SerializeField] [Range(0, 100f)] private float toggleAfterPercent = 100;
+
+    private float exitTime, exitCounter;
     private bool toggled;
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+        this.exitCounter = 0;
+        this.exitTime = toggleAfterPercent * stateInfo.length / 100;
         if (toggleDuringTransition) LockMovement(animator, lockOnEnter);
     }
 
@@ -23,6 +29,12 @@ public class LockerKeyState : StateMachineBehaviour
         if (!toggleDuringTransition && !toggled && !animator.IsInTransition(layerIndex)) {
             LockMovement(animator, lockOnEnter);
             toggled = true;
+        }
+
+        if (toggleAfterPercent < 100) {
+            if (exitCounter >= exitTime) LockMovement(animator, !lockOnEnter);
+
+            exitCounter += Time.deltaTime;
         }
     }
 

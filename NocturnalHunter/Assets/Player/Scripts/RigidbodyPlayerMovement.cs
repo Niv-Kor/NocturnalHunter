@@ -121,6 +121,9 @@ public class RigidbodyPlayerMovement : MonoBehaviour
     /// </summary>
     public void Jump() { requestJump = true; }
 
+    /// <summary>
+    /// Complete the jump request made earlier, to fulfill the delay condition.
+    /// </summary>
     private void CompleteJumpRequest() {
         if (!requestJump) return;
 
@@ -180,12 +183,13 @@ public class RigidbodyPlayerMovement : MonoBehaviour
     /// <summary>
     /// Check if a vector's x, y and z absolute values are smaller than a peremeter n (exclusive).
     /// </summary>
+    /// <param name="vec">The vector to check</param>
     /// <param name="n">Maximum allowed value (exclusive)</param>
-    /// <returns>True is all absolute values of the vetor 'a' are smaller than 'n'.</returns>
-    private bool AbsoluteSmallerThan(Vector3 a, float n) {
-        float x = Mathf.Abs(a.x);
-        float y = Mathf.Abs(a.y);
-        float z = Mathf.Abs(a.z);
+    /// <returns>True is all absolute values of the vetor are smaller than n.</returns>
+    private bool AbsoluteSmallerThan(Vector3 vec, float n) {
+        float x = Mathf.Abs(vec.x);
+        float y = Mathf.Abs(vec.y);
+        float z = Mathf.Abs(vec.z);
 
         return x < n && y < n && z < n;
     }

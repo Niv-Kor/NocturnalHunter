@@ -2,16 +2,9 @@
 
 public class Foot : MonoBehaviour
 {
-    public enum FootYPosition {
-        Middle, Front, Rear
-    }
+    [Header("Debug")]
 
-    public enum FootXPosition {
-        Middle, Left, Right
-    }
-
-    [SerializeField] public FootYPosition yPosition;
-    [SerializeField] public FootXPosition xPosition;
+    [Tooltip("Paint the foot with gizmos.")]
     [SerializeField] private bool visualize = true;
 
     private static readonly int MAX_COLLISION_RESULTS = 64;
