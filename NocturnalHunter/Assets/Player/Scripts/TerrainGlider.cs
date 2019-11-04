@@ -11,7 +11,7 @@ public class TerrainGlider : MonoBehaviour
     [Tooltip("An angle that's considered to be the most steep.")]
     [SerializeField] [Range(1, 90f)] private float maxSlopeAngle = 90;
     
-    private readonly float LERP_STEP_MULTIPLIER = 10;
+    private static readonly float LERP_STEP_MULTIPLIER = 10;
 
     private Rigidbody rigidBody;
     private RigidbodyPlayerMovement playerMovement;
@@ -36,7 +36,7 @@ public class TerrainGlider : MonoBehaviour
     }
 
     private void Update() {
-        if (!playerMovement.InMidAir) ChangeDragValue();
+        if (playerMovement.IsGrounded) ChangeDragValue();
     }
 
     /// <summary>

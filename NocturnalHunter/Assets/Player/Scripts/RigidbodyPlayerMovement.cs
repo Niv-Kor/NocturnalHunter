@@ -19,6 +19,9 @@ public class RigidbodyPlayerMovement : MonoBehaviour
     [Tooltip("The speed of regular walking.")]
     [SerializeField] private float walkSpeed = 15;
 
+    [Tooltip("Creeping speed as a percentage of the current walking speed.")]
+    [SerializeField] private float creepingSpeedMultiplier = .5f;
+
     [Tooltip("The speed of running.")]
     [SerializeField] private float runSpeed = 30;
 
@@ -34,34 +37,50 @@ public class RigidbodyPlayerMovement : MonoBehaviour
     [Tooltip("The maximum force being applied on the player when jumping.")]
     [SerializeField] private float maxJumpForce = 100;
 
-    private readonly string HORIZONTAL_AXIS = "Horizontal";
-    private readonly string VERTICAL_AXIS = "Vertical";
-    private readonly float SHARP_PITCH_ANGLE = 70;
-    private readonly float CASUAL_ROTATION_RATE = .5f;
-    private readonly float INITIAL_ALIGNMENT_TIME = .5f;
+    [Header("Animation Delay")]
+
+    [Tooltip("Delay until a jump occurs.")]
+    [SerializeField] private float jumpDelay = 0;
+
+    private static readonly string HORIZONTAL_AXIS = "Horizontal";
+    private static readonly string VERTICAL_AXIS = "Vertical";
+    private static readonly float SHARP_PITCH_ANGLE = 70;
+    private static readonly float CASUAL_ROTATION_RATE = .5f;
+    private static readonly float INITIAL_ALIGNMENT_TIME = .5f;
 
     private Rigidbody rigidBody;
     private GameObject[] feet;
     private TerrainGlider terrainGlider;
+    private PlayerControl playerControl;
     private Vector3 turnDirection;
-    private float defaultYaw, lastMovement, initialTimer;
-    private bool rotateTowards, isWalking, midAir;
+    private float defaultYaw, lastMovement;
+    private float initialTurnTimer, jumpTimer;
+    private bool rotateTowards, isWalking, grounded;
     private bool doubleRotRate, initialTurn;
+    private bool requestJump;
 
     public bool IsWalking { get { return isWalking; } set { } }
 
     public bool IsRotating { get { return rotateTowards; } set { } }
 
-    public bool InMidAir { get { return midAir; } set { } }
+    public bool IsGrounded {
+        get { return grounded; }
+        set {
+            playerControl.ConsiderGrounded(value);
+            grounded = value;
+        }
+    }
 
     private void Start() {
         this.rigidBody = GetComponent<Rigidbody>();
         this.terrainGlider = GetComponent<TerrainGlider>();
+        this.playerControl = avatar.GetComponent<PlayerControl>();
         this.defaultYaw = avatar.transform.eulerAngles.y;
         this.lastMovement = 0;
         this.rotateTowards = false;
         this.turnDirection = Vector3.zero;
-        this.initialTimer = 0;
+        this.initialTurnTimer = 0;
+        this.jumpTimer = 0;
         this.feet = new GameObject[legs.transform.childCount];
 
         transform.forward = Vector3.zero;
@@ -76,27 +95,47 @@ public class RigidbodyPlayerMovement : MonoBehaviour
         float verInput = Input.GetAxis(VERTICAL_AXIS);
         float currentMovement = Mathf.Max(Mathf.Abs(horInput), Mathf.Abs(verInput));
         float inputVolume = (currentMovement > lastMovement) ? 1 : Mathf.Max(Mathf.Abs(verInput), Mathf.Abs(horInput));
-        float movementSpeed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
+
+        //calculate the movement speed
+        float movementSpeed = 0;
+        if (!playerControl.MovementLocked) {
+            if (Input.GetKey(KeyCode.LeftShift)) movementSpeed = runSpeed; ///TEMP binding
+            else if (Input.GetMouseButton(1)) movementSpeed = walkSpeed * creepingSpeedMultiplier; ///TEMP binding
+            else movementSpeed = walkSpeed;
+        }
 
         Move(horInput, verInput, inputVolume, movementSpeed);
         Turn(turnDirection);
+        CompleteJumpRequest();
 
         //save movement parameters for later use
         isWalking = (verInput != 0 || horInput != 0) && currentMovement >= lastMovement;
         lastMovement = Mathf.Max(Mathf.Abs(horInput), Mathf.Abs(verInput));
 
-        if (InMidAir) rigidBody.drag = 0;
-
-        if (!initialTurn) initialTimer += Time.deltaTime;
+        if (!IsGrounded || requestJump) rigidBody.drag = 0;
+        if (!initialTurn) initialTurnTimer += Time.deltaTime;
     }
 
     /// <summary>
-    /// Perform a jump by applying force upwards.
+    /// Request a jump.
     /// </summary>
-    public void Jump() {
-        float steepPercent = (terrainGlider != null) ? Mathf.Abs(terrainGlider.SteepPercent) : 50;
-        float jumpForce = steepPercent * (maxJumpForce - minJumpForce) / 100 + minJumpForce;
-        rigidBody.AddForce(transform.up * jumpForce);
+    public void Jump() { requestJump = true; }
+
+    private void CompleteJumpRequest() {
+        if (!requestJump) return;
+
+        if (jumpTimer >= jumpDelay) {
+            jumpTimer = 0;
+            requestJump = false;
+
+            //perform jump
+            float steepPercent = (terrainGlider != null) ? Mathf.Abs(terrainGlider.SteepPercent) : 50;
+            float jumpForce = steepPercent * (maxJumpForce - minJumpForce) / 100 + minJumpForce;
+            Vector3 direction = transform.up + (100 - steepPercent) * turnDirection / 100;
+            rigidBody.AddForce(direction * jumpForce);
+        }
+
+        jumpTimer += Time.deltaTime;
     }
 
     /// <summary>
@@ -107,7 +146,7 @@ public class RigidbodyPlayerMovement : MonoBehaviour
     /// <param name="volume">How hard is the specified direction (ranged 0 to 1)</param>
     /// <param name="speed">The movement speed</param>
     private void Move(float x, float y, float volume, float speed) {
-        Vector3 groundNormal = CalcGroundNormal(out midAir);
+        Vector3 groundNormal = CalcGroundNormal();
         Vector3 forward = Vector3.Cross(groundNormal, -cameraBase.transform.right);
         Vector3 right = Vector3.Cross(groundNormal, cameraBase.transform.forward);
 
@@ -132,7 +171,7 @@ public class RigidbodyPlayerMovement : MonoBehaviour
         }
 
         //move towards the desired direction
-        if (!InMidAir && AbsoluteSmallerThan(rigidBody.velocity, 10)) {
+        if (grounded && AbsoluteSmallerThan(rigidBody.velocity, 10)) {
             Vector3 moveDirection = (forward * y + right * x).normalized;
             rigidBody.AddForce(moveDirection * volume * speed);
         }
@@ -171,11 +210,11 @@ public class RigidbodyPlayerMovement : MonoBehaviour
     /// <param name="direction">The direction the player supposed to be facing</param>
     private void Turn(Vector3 direction) {
         //cancel rotation
-        if (direction == Vector3.zero || !rotateTowards || initialTimer >= INITIAL_ALIGNMENT_TIME) {
+        if (direction == Vector3.zero || !rotateTowards || initialTurnTimer >= INITIAL_ALIGNMENT_TIME) {
             doubleRotRate = false;
             rotateTowards = false;
             initialTurn = true;
-            initialTimer = 0;
+            initialTurnTimer = 0;
             return;
         }
 
@@ -214,12 +253,11 @@ public class RigidbodyPlayerMovement : MonoBehaviour
     /// <summary>
     /// Calculate the normal vector of the exact area that the player is currently standing on.
     /// </summary>
-    /// <param name="midAir">Whether the avatar is floating in the air</param>
     /// <returns>The normal vector of the current area.</returns>
-    private Vector3 CalcGroundNormal(out bool midAir) {
+    private Vector3 CalcGroundNormal() {
         RaycastHit[] hits = new RaycastHit[feet.Length];
         Vector3 normalizedHit = Vector3.zero;
-        midAir = true;
+        bool feetGrounded = false;
 
         for (int i = 0; i < hits.Length; i++) {
             Transform footTransform = feet[i].transform;
@@ -228,11 +266,13 @@ public class RigidbodyPlayerMovement : MonoBehaviour
 
             //check if current foot is touching the floor
             Foot footComponent = feet[i].GetComponent<Foot>();
-            if (midAir && footComponent.IsGrounded(groundLayer)) midAir = false;
+            if (!feetGrounded && footComponent.IsGrounded(groundLayer)) feetGrounded = true;
         }
 
         //calculate the average value for all of the avatar's legs
         foreach (RaycastHit hit in hits) normalizedHit += hit.normal;
+
+        IsGrounded = feetGrounded; //update IsGrounded public value
         return normalizedHit.normalized;
     }
 }

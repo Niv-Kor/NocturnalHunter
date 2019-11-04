@@ -5,42 +5,59 @@ public class PlayerControl : MonoBehaviour
     private AnimalPlayer animalPlayer;
     private RigidbodyPlayerMovement playerMovement;
 
+    public bool MovementLocked {
+        get { return animalPlayer.MovementLocked; }
+        set { animalPlayer.MovementLocked = value; }
+    }
+
+    public bool JumpLocked {
+        get { return animalPlayer.JumpLocked; }
+        set { animalPlayer.JumpLocked = value; }
+    }
+
     private void Start() {
         this.animalPlayer = GetComponent<AnimalPlayer>();
         this.playerMovement = transform.parent.GetComponent<RigidbodyPlayerMovement>();
     }
 
     private void Update() {
-        //jump
-        if (playerMovement.InMidAir) animalPlayer.Jump(); //only animate
-        else if (Input.GetKey(KeyCode.Space)) playerMovement.Jump(); //perform jump
-
-        //walk
-        else if (playerMovement.IsWalking) {
-            if (Input.GetKey(KeyCode.LeftShift)) animalPlayer.Run();
-            else animalPlayer.Walk();
+        if (playerMovement.IsGrounded) {
+            Jump();
+            Move();
+            Attack();
         }
-
-        //idle
-        else if (Input.GetKey(KeyCode.E)) animalPlayer.Morale();
-        else if (Input.GetMouseButton(0)) animalPlayer.Attack();
-        else animalPlayer.Idle();
+        else CancelMovement();
     }
 
-    /// <summary>
-    /// Activate a movement animation (walk / run).
-    /// </summary>
-    /// <param name="flag">True if the player is moving / False to stop moving</param>
-    private void Move(bool flag) {
-        if (flag) {
-            
+    public void ConsiderGrounded(bool flag) {
+        animalPlayer.Ground(flag);
+    }
+
+    private void Move() {
+        bool movement = playerMovement.IsWalking;
+        animalPlayer.Walk(movement);
+
+        if (movement) {
+            animalPlayer.Run(Input.GetKey(KeyCode.LeftShift)); ///TEMP binding
+            animalPlayer.Creep(Input.GetMouseButton(1)); ///TEMP binding
         }
-        else animalPlayer.Idle();
+        else CancelMovement();
+    }
+
+    private void CancelMovement() {
+        animalPlayer.Walk(false);
+        animalPlayer.Run(false);
+        animalPlayer.Creep(false);
     }
 
     private void Jump() {
-        if (playerMovement.InMidAir) animalPlayer.Jump(); //only animate
-        else if (Input.GetKey(KeyCode.Space)) playerMovement.Jump(); //perform jump
-        else animalPlayer.Idle();
+        if (playerMovement.IsGrounded && !MovementLocked && !JumpLocked && Input.GetMouseButtonDown(2)) {
+            animalPlayer.Jump(); ///TEMP binding
+            playerMovement.Jump();
+        }
+    }
+
+    private void Attack() {
+        if (Input.GetMouseButtonDown(0)) animalPlayer.Attack(); ///TEMP binding
     }
 }

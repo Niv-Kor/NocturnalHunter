@@ -14,8 +14,8 @@ public class Foot : MonoBehaviour
     [SerializeField] public FootXPosition xPosition;
     [SerializeField] private bool visualize = true;
 
-    private readonly int MAX_COLLISION_RESULTS = 64;
-    private readonly float MIN_GROUND_DISTANCE = .15f;
+    private static readonly int MAX_COLLISION_RESULTS = 64;
+    private static readonly float MIN_GROUND_DISTANCE = .15f;
 
     private Collider[] colResults;
     private float radius;
