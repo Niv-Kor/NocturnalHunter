@@ -2,14 +2,14 @@
 
 public class RigidbodyPlayerMovement : MonoBehaviour
 {
-    [Tooltip("The player's avatar.")]
-    [SerializeField] private GameObject avatar;
-
     [Tooltip("The base of the cameras.")]
     [SerializeField] private GameObject cameraBase;
 
     [Tooltip("The avatars's legs object (containing all its legs as children).")]
     [SerializeField] private GameObject legs;
+
+    [Tooltip("The main terrain the player is walking on.")]
+    [SerializeField] private GameObject terrain;
 
     [Tooltip("Layers of objects that can be stepped on.")]
     [SerializeField] private LayerMask groundLayer;
@@ -49,6 +49,7 @@ public class RigidbodyPlayerMovement : MonoBehaviour
     private static readonly float INITIAL_ALIGNMENT_TIME = .5f;
 
     private Rigidbody rigidBody;
+    private Transform playerTransform;
     private GameObject[] feet;
     private TerrainGlider terrainGlider;
     private PlayerControl playerControl;
@@ -72,10 +73,11 @@ public class RigidbodyPlayerMovement : MonoBehaviour
     }
 
     private void Start() {
-        this.rigidBody = GetComponent<Rigidbody>();
-        this.terrainGlider = GetComponent<TerrainGlider>();
-        this.playerControl = avatar.GetComponent<PlayerControl>();
-        this.defaultYaw = avatar.transform.eulerAngles.y;
+        this.rigidBody = GetComponentInParent<Rigidbody>();
+        this.playerTransform = transform.parent;
+        this.terrainGlider = terrain.GetComponent<TerrainGlider>();
+        this.playerControl = GetComponent<PlayerControl>();
+        this.defaultYaw = transform.eulerAngles.y;
         this.lastMovement = 0;
         this.rotateTowards = false;
         this.turnDirection = Vector3.zero;
@@ -83,7 +85,7 @@ public class RigidbodyPlayerMovement : MonoBehaviour
         this.jumpTimer = 0;
         this.feet = new GameObject[legs.transform.childCount];
 
-        transform.forward = Vector3.zero;
+        playerTransform.forward = Vector3.zero;
 
         for (int i = 0; i < feet.Length; i++)
             feet[i] = legs.transform.GetChild(i).gameObject;
@@ -134,7 +136,7 @@ public class RigidbodyPlayerMovement : MonoBehaviour
             //perform jump
             float steepPercent = (terrainGlider != null) ? Mathf.Abs(terrainGlider.SteepPercent) : 50;
             float jumpForce = steepPercent * (maxJumpForce - minJumpForce) / 100 + minJumpForce;
-            Vector3 direction = transform.up + (100 - steepPercent) * turnDirection / 100;
+            Vector3 direction = playerTransform.up + (100 - steepPercent) * turnDirection / 100;
             rigidBody.AddForce(direction * jumpForce);
         }
 
@@ -154,7 +156,7 @@ public class RigidbodyPlayerMovement : MonoBehaviour
         Vector3 right = Vector3.Cross(groundNormal, cameraBase.transform.forward);
 
         //compress the turn direction if it's too radical (180 degrees)
-        if (IsOppositeDirection(transform.forward, (forward * y + right * x).normalized)) {
+        if (IsOppositeDirection(playerTransform.forward, (forward * y + right * x).normalized)) {
             //swap x and y values and compress the direction by 90 degrees
             float temp = x;
             x = y;
@@ -205,6 +207,7 @@ public class RigidbodyPlayerMovement : MonoBehaviour
         bool xOppose = a.x == 0 || b.x == 0 || a.x * b.x < 0;
         bool yOppose = a.y == 0 || b.y == 0 || a.y * b.y < 0;
         bool zOppose = a.z == 0 || b.z == 0 || a.z * b.z < 0;
+
         return xOppose && yOppose && zOppose;
     }
 
@@ -223,16 +226,16 @@ public class RigidbodyPlayerMovement : MonoBehaviour
         }
 
         //calculate step size
-        Vector3 currentForward = transform.forward;
+        Vector3 currentForward = playerTransform.forward;
         Vector3 fullRotation = Vector3.RotateTowards(currentForward, direction, 2, 0);
         Quaternion fullDirection = Quaternion.LookRotation(fullRotation);
-        float currentY = transform.eulerAngles.y - defaultYaw;
+        float currentY = playerTransform.eulerAngles.y - defaultYaw;
         float targetY = fullDirection.eulerAngles.y - defaultYaw;
         float angleDistance = Mathf.Abs(Mathf.DeltaAngle(currentY, targetY));
         float rotationPercent = Mathf.Clamp((angleDistance - 10) / (180 - 10) * 100, 0, 100);
 
         //check if the slope is very sharp
-        float pitchAngle = transform.eulerAngles.x;
+        float pitchAngle = playerTransform.eulerAngles.x;
         pitchAngle = (pitchAngle > 180) ? pitchAngle - 360 : pitchAngle;
         bool slipperyFall = pitchAngle > SHARP_PITCH_ANGLE;
         float rotationRate;
@@ -251,7 +254,7 @@ public class RigidbodyPlayerMovement : MonoBehaviour
         float step = rotationRate * Time.deltaTime;
         Vector3 nextDirection = Vector3.RotateTowards(currentForward, direction, step, 0);
         Quaternion nextRotation = Quaternion.LookRotation(nextDirection);
-        transform.rotation = nextRotation;
+        playerTransform.rotation = nextRotation;
     }
 
     /// <summary>

@@ -2,6 +2,9 @@
 
 public class TerrainGlider : MonoBehaviour
 {
+    [Tooltip("The avatar object (a child of the player object).")]
+    [SerializeField] private GameObject avatar;
+
     [Tooltip("Minimum resistance to the floor on relatively steep slopes.")]
     [SerializeField] private float minResistance = 0;
 
@@ -31,8 +34,8 @@ public class TerrainGlider : MonoBehaviour
     }
 
     private void Start() {
-        this.rigidBody = GetComponent<Rigidbody>();
-        this.playerMovement = GetComponent<RigidbodyPlayerMovement>();
+        this.rigidBody = avatar.GetComponentInParent<Rigidbody>();
+        this.playerMovement = avatar.GetComponent<RigidbodyPlayerMovement>();
     }
 
     private void Update() {

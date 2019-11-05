@@ -37,7 +37,7 @@ public class PlayerControl : MonoBehaviour
 
     private void Start() {
         this.stateMachine = GetComponent<StateMachine>();
-        this.playerMovement = transform.parent.GetComponent<RigidbodyPlayerMovement>();
+        this.playerMovement = GetComponent<RigidbodyPlayerMovement>();
         ResetIdleTimers();
     }
 
