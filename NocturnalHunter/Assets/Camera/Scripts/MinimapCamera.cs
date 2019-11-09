@@ -8,6 +8,9 @@ public class MinimapCamera : MonoBehaviour
     [Tooltip("The main terrain in the scene.")]
     [SerializeField] private GameObject terrain;
 
+    [Tooltip("The size of the view area in meteres.")]
+    [SerializeField] private float viewArea = 100;
+
     private Camera camComponent;
     private float height;
 
@@ -18,6 +21,7 @@ public class MinimapCamera : MonoBehaviour
         this.height = terrainData.size.y * 1.5f;
         float terrainHeight = terrain.transform.position.y;
         camComponent.farClipPlane =  height * 1.5f - terrainHeight;
+        camComponent.orthographicSize = viewArea;
     }
 
     private void Update() {

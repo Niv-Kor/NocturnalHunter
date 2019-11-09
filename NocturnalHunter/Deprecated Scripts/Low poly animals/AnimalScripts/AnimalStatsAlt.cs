@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Animal Stats", menuName = "LowPolyAnimals/NewAnimalStats", order = 1)]
-public class AnimalStats : ScriptableObject
+public class AnimalStatsAlt : ScriptableObject
 {
     [SerializeField, Tooltip("How dominent this animal is in the food chain, agressive animals will attack less dominant animals.")]
     public int dominance = 1;

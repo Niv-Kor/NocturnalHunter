@@ -21,7 +21,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private float maxLongIdleTime;
 
     private StateMachine stateMachine;
-    private RigidbodyPlayerMovement playerMovement;
+    private RigidbodyMovement rigidbodyMovement;
     private float shortIdleTimer, longIdleTimer;
     private float randomShortIdleTime, randomLongIdleTime;
 
@@ -37,14 +37,14 @@ public class PlayerControl : MonoBehaviour
 
     private void Start() {
         this.stateMachine = GetComponent<StateMachine>();
-        this.playerMovement = GetComponent<RigidbodyPlayerMovement>();
+        this.rigidbodyMovement = GetComponent<RigidbodyMovement>();
         ResetIdleTimers();
     }
 
     private void Update() {
         ManageIdling();
 
-        if (playerMovement.IsGrounded) {
+        if (rigidbodyMovement.IsGrounded) {
             bool jump = Jump();
             bool move = Move();
             bool attack = Attack();
@@ -73,7 +73,7 @@ public class PlayerControl : MonoBehaviour
     /// </summary>
     /// <returns>True if an animation was applied.</returns>
     private bool Move() {
-        bool movement = playerMovement.IsWalking;
+        bool movement = rigidbodyMovement.IsWalking;
         stateMachine.Animate(StateMachine.AnimationType.Walk, movement);
 
         if (movement) {
@@ -90,9 +90,9 @@ public class PlayerControl : MonoBehaviour
     /// </summary>
     /// <returns>True if an animation was applied.</returns>
     private bool Jump() {
-        if (playerMovement.IsGrounded && !MovementLocked && !JumpLocked && Input.GetMouseButtonDown(2)) {
+        if (rigidbodyMovement.IsGrounded && !MovementLocked && !JumpLocked && Input.GetMouseButtonDown(2)) {
             stateMachine.Animate(StateMachine.AnimationType.Jump, true); ///TEMP binding
-            playerMovement.Jump();
+            rigidbodyMovement.Jump();
             return true;
         }
 
