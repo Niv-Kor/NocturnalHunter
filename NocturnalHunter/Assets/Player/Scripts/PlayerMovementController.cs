@@ -20,7 +20,7 @@ public class PlayerMovementController : MonoBehaviour
         this.playerControl = GetComponent<PlayerControl>();
         this.animalStats = GetComponent<AnimalStats>();
         this.lastMovement = 0;
-        this.parentTransform = transform.parent;
+        this.parentTransform = transform.root;
         parentTransform.forward = Vector3.zero;
     }
 
