@@ -1,0 +1,148 @@
+fileFormatVersion: 2
+guid: bebe49230efa9ba4e961013395e0c134
+timeCreated: 1507985443
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: city_tree_01_v_01
+    100002: city_tree_01_v_02
+    100004: city_tree_01_v_03
+    100006: city_tree_01_v_04
+    100008: city_tree_02_v_01
+    100010: city_tree_02_v_02
+    100012: city_tree_02_v_03
+    100014: city_tree_02_v_04
+    100016: city_tree_03_v_01
+    100018: city_tree_03_v_02
+    100020: city_tree_03_v_03
+    100022: city_tree_03_v_04
+    100024: park_city_tree_04_v_01
+    100026: park_city_tree_05_v_01
+    100028: park_city_tree_06_v_03
+    100030: //RootNode
+    400000: city_tree_01_v_01
+    400002: city_tree_01_v_02
+    400004: city_tree_01_v_03
+    400006: city_tree_01_v_04
+    400008: city_tree_02_v_01
+    400010: city_tree_02_v_02
+    400012: city_tree_02_v_03
+    400014: city_tree_02_v_04
+    400016: city_tree_03_v_01
+    400018: city_tree_03_v_02
+    400020: city_tree_03_v_03
+    400022: city_tree_03_v_04
+    400024: park_city_tree_04_v_01
+    400026: park_city_tree_05_v_01
+    400028: park_city_tree_06_v_03
+    400030: //RootNode
+    2300000: city_tree_01_v_01
+    2300002: city_tree_01_v_02
+    2300004: city_tree_01_v_03
+    2300006: city_tree_01_v_04
+    2300008: city_tree_02_v_01
+    2300010: city_tree_02_v_02
+    2300012: city_tree_02_v_03
+    2300014: city_tree_02_v_04
+    2300016: city_tree_03_v_01
+    2300018: city_tree_03_v_02
+    2300020: city_tree_03_v_03
+    2300022: city_tree_03_v_04
+    2300024: park_city_tree_04_v_01
+    2300026: park_city_tree_05_v_01
+    2300028: park_city_tree_06_v_03
+    3300000: city_tree_01_v_01
+    3300002: city_tree_01_v_02
+    3300004: city_tree_01_v_03
+    3300006: city_tree_01_v_04
+    3300008: city_tree_02_v_01
+    3300010: city_tree_02_v_02
+    3300012: city_tree_02_v_03
+    3300014: city_tree_02_v_04
+    3300016: city_tree_03_v_01
+    3300018: city_tree_03_v_02
+    3300020: city_tree_03_v_03
+    3300022: city_tree_03_v_04
+    3300024: park_city_tree_04_v_01
+    3300026: park_city_tree_05_v_01
+    3300028: park_city_tree_06_v_03
+    4300000: park_city_tree_06_v_03
+    4300002: city_tree_01_v_04
+    4300004: city_tree_02_v_04
+    4300006: city_tree_03_v_04
+    4300008: city_tree_03_v_03
+    4300010: city_tree_02_v_03
+    4300012: city_tree_01_v_03
+    4300014: city_tree_01_v_02
+    4300016: city_tree_02_v_02
+    4300018: city_tree_03_v_02
+    4300020: park_city_tree_04_v_01
+    4300022: park_city_tree_05_v_01
+    4300024: city_tree_03_v_01
+    4300026: city_tree_02_v_01
+    4300028: city_tree_01_v_01
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 100
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

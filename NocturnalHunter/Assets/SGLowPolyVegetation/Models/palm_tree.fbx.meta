@@ -1,0 +1,98 @@
+fileFormatVersion: 2
+guid: c83b526138131974aabc0ba52f831f39
+timeCreated: 1507985681
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: palm_tree_01_v_01
+    100002: palm_tree_02_v_01
+    100004: palm_tree_03_v_01
+    100006: palm_tree_04_v_01
+    100008: palm_tree_05_v_01
+    100010: //RootNode
+    400000: palm_tree_01_v_01
+    400002: palm_tree_02_v_01
+    400004: palm_tree_03_v_01
+    400006: palm_tree_04_v_01
+    400008: palm_tree_05_v_01
+    400010: //RootNode
+    2300000: palm_tree_01_v_01
+    2300002: palm_tree_02_v_01
+    2300004: palm_tree_03_v_01
+    2300006: palm_tree_04_v_01
+    2300008: palm_tree_05_v_01
+    3300000: palm_tree_01_v_01
+    3300002: palm_tree_02_v_01
+    3300004: palm_tree_03_v_01
+    3300006: palm_tree_04_v_01
+    3300008: palm_tree_05_v_01
+    4300000: palm_tree_05_v_01
+    4300002: palm_tree_04_v_01
+    4300004: palm_tree_03_v_01
+    4300006: palm_tree_02_v_01
+    4300008: palm_tree_01_v_01
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 100
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

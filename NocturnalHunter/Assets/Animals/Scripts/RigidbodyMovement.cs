@@ -47,7 +47,7 @@ public class RigidbodyMovement : MonoBehaviour
         this.defaultYaw = transform.eulerAngles.y;
         this.jumpTimer = 0;
         this.parentTransform = transform.parent;
-        parentTransform.forward = Vector3.zero;
+        parentTransform.forward = Vector3.one;
 
         this.feet = new GameObject[legs.transform.childCount];
         for (int i = 0; i < feet.Length; i++)
@@ -85,7 +85,11 @@ public class RigidbodyMovement : MonoBehaviour
     /// <param name="direction">Normalized direction to move towards</param>
     /// <param name="speed">Movement speed</param>
     public void Move(Vector3 direction, float speed) {
+        //tune the direction and make it hug the terrain
         Vector3 groundNormal = GroundNormal;
+        Vector3 left = Quaternion.AngleAxis(-90, groundNormal) * direction;
+        Vector3 forward = Vector3.Cross(groundNormal, left);
+        direction = forward;
 
         //reset walk timer
         walkTimer = 0;
@@ -105,7 +109,7 @@ public class RigidbodyMovement : MonoBehaviour
         //first frames of the game
         else {
             turnDirection = direction;
-            if (turnDirection != Vector3.zero) rotateTowards = true;
+            if (turnDirection.sqrMagnitude > Mathf.Epsilon) rotateTowards = true;
         }
 
         //apply force against the animal's rigidbody
@@ -147,7 +151,8 @@ public class RigidbodyMovement : MonoBehaviour
     /// </summary>
     public void Turn() {
         //cancel rotation
-        if (turnDirection == Vector3.zero || !rotateTowards || initialTurnTimer >= INITIAL_ALIGNMENT_TIME) {
+        bool initial = initialTurnTimer < INITIAL_ALIGNMENT_TIME;
+        if (turnDirection.sqrMagnitude < Mathf.Epsilon || !rotateTowards || !initial) {
             doubleRotRate = false;
             rotateTowards = false;
             initialTurn = true;

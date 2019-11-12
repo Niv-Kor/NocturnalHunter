@@ -4,13 +4,13 @@ using UnityEngine;
 public class AISurvivalPredisposition : MonoBehaviour
 {
     [SerializeField] public List<GameObject> predators;
-    [SerializeField] private float visionTheta = 30; /// TEST
-    [SerializeField] private float visionRadius = 60; /// TEST
 
     private AIFlightBehaviour flightBehaviour;
+    private AnimalStats animalStats;
 
     private void Start() {
         this.flightBehaviour = GetComponent<AIFlightBehaviour>();
+        this.animalStats = GetComponent<AnimalStats>();
     }
 
     private void Update() {
@@ -27,9 +27,11 @@ public class AISurvivalPredisposition : MonoBehaviour
             Vector3 predatorDir = predatorPosition - startVec;
             float predatorAngle = Vector3.Angle(predatorDir, startVecFwd);
             float predatorDistance = Vector3.Distance(startVec, predatorPosition);
+            float visionAngle = animalStats.visionAngle;
+            float visionRadius = animalStats.visionDistance;
 
             //predator is close by and in front of prey
-            if (predatorAngle <= visionTheta && predatorDistance <= visionRadius) return true;
+            if (predatorAngle <= visionAngle && predatorDistance <= visionRadius) return true;
         }
 
         //no predator detected

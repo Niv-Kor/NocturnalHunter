@@ -8,8 +8,7 @@ public class PlayerMovementController : MonoBehaviour
     private static readonly string HORIZONTAL_AXIS = "Horizontal";
     private static readonly string VERTICAL_AXIS = "Vertical";
 
-    private Transform parentTransform;
-    private PlayerControl playerControl;
+    private PlayerStateController playerControl;
     private RigidbodyMovement rigidbodyMovement;
     private AnimalStats animalStats;
     private float lastMovement;
@@ -17,11 +16,9 @@ public class PlayerMovementController : MonoBehaviour
 
     private void Start() {
         this.rigidbodyMovement = GetComponent<RigidbodyMovement>();
-        this.playerControl = GetComponent<PlayerControl>();
+        this.playerControl = GetComponent<PlayerStateController>();
         this.animalStats = GetComponent<AnimalStats>();
         this.lastMovement = 0;
-        this.parentTransform = transform.root;
-        parentTransform.forward = Vector3.zero;
     }
 
     private void Update() {

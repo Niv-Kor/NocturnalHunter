@@ -54,10 +54,8 @@ public class RouteManager : MonoBehaviour
     private RouteNodeID NearestRoute(Vector3 position, char path, out float nodeDistance) {
         float bestDistance = Mathf.Infinity;
         RouteNodeID bestCase = null;
-        int i = 0;
-        int iterationDir = 1;
 
-        while (true) {
+        for (int i = 0; i < routeMap[path].Count; i++) {
             Vector3 routePoint = routeMap[path][i].Point;
             float distance = Vector3.Distance(position, routePoint);
 
@@ -66,18 +64,6 @@ public class RouteManager : MonoBehaviour
                 bestDistance = distance;
                 bestCase = routeMap[path][i];
             }
-            //points are getting further - change iteration direction
-            else if (iterationDir == 1) {
-                i = routeMap[path].Count - 1;
-                iterationDir = -1;
-            }
-            //tried both iteration directions
-            else break;
-
-            //proceed
-            if ((iterationDir == 1 && i < routeMap[path].Count) ||
-                (iterationDir == -1 && i > 0)) i += iterationDir;
-            else break;
         }
 
         nodeDistance = bestDistance;
@@ -96,6 +82,7 @@ public class RouteManager : MonoBehaviour
 
         foreach (char path in routeMap.Keys) {
             RouteNodeID potential = NearestRoute(position, path, out float potentialDist);
+
             if (potentialDist < bestDistance) {
                 bestDistance = potentialDist;
                 nearest = potential;
@@ -129,10 +116,8 @@ public class RouteManager : MonoBehaviour
                 RouteNodeID node = routeMap[path][i];
 
                 if (node == currentNode) {
-                    if (i < routeMap[path].Count - 1)
-                        return routeMap[path][i + 1];
-                    else
-                        return routeMap[path][0];
+                    if (i < routeMap[path].Count - 1) return routeMap[path][i + 1];
+                    else return routeMap[path][0];
                 }
             }
 

@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class RouteNodeID : MonoBehaviour
 {
-    public LayerMask mask;
-
     [Tooltip("The path that this node belongs to.")]
     [SerializeField] public char routePath;
 
