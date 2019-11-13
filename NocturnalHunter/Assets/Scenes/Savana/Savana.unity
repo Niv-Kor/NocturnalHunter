@@ -15,9 +15,9 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 1
-  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_FogColor: {r: 0.5647059, g: 0.5647059, b: 0.5647059, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.001
+  m_FogDensity: 0.0035
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 1, g: 1, b: 1, a: 1}
@@ -5712,6 +5712,12 @@ MonoBehaviour:
   routePath: 97
   routeOrder: 29
   junctionOf: 
+--- !u!1 &978743837 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2146099517604287689, guid: 3c2cdeab1dfd44644b87fea043356e8b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1808076091}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &990357234
 GameObject:
   m_ObjectHideFlags: 0
@@ -6030,6 +6036,7 @@ GameObject:
   - component: {fileID: 1055574593}
   - component: {fileID: 1055574596}
   - component: {fileID: 1055574594}
+  - component: {fileID: 1055574595}
   m_Layer: 10
   m_Name: Minimap Camera
   m_TagString: Untagged
@@ -6067,6 +6074,19 @@ MonoBehaviour:
   player: {fileID: 2039486987}
   terrain: {fileID: 1628842336}
   viewArea: 500
+--- !u!114 &1055574595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1055574592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff26db721962cdf4a8edcdfa9a767d2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  profile: {fileID: 11400000, guid: 799544ff2c99e5b4bb0029f2956ec3f7, type: 2}
 --- !u!20 &1055574596
 Camera:
   m_ObjectHideFlags: 0
@@ -6657,6 +6677,12 @@ MonoBehaviour:
   routePath: 97
   routeOrder: 17
   junctionOf: 
+--- !u!1 &1177145035 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2146099519493774238, guid: 3c2cdeab1dfd44644b87fea043356e8b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1808076091}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1193613516
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8387,6 +8413,7 @@ GameObject:
   - component: {fileID: 1539246637}
   - component: {fileID: 1539246636}
   - component: {fileID: 1539246635}
+  - component: {fileID: 1539246640}
   m_Layer: 10
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -8497,6 +8524,19 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &1539246640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539246633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff26db721962cdf4a8edcdfa9a767d2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  profile: {fileID: 11400000, guid: d13a664030148f24b89ae6397d03312b, type: 2}
 --- !u!1001 &1550108794
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14440,6 +14480,16 @@ PrefabInstance:
       propertyPath: m_Range
       value: 800
       objectReference: {fileID: 0}
+    - target: {fileID: 2146099518254347431, guid: 3c2cdeab1dfd44644b87fea043356e8b,
+        type: 3}
+      propertyPath: m_Intensity
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2146099518254347431, guid: 3c2cdeab1dfd44644b87fea043356e8b,
+        type: 3}
+      propertyPath: m_Lightmapping
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 2146099517549103471, guid: 3c2cdeab1dfd44644b87fea043356e8b,
         type: 3}
       propertyPath: m_LocalPosition.y
@@ -15118,7 +15168,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2039486986}
   m_LocalRotation: {x: -0.0012216417, y: 0, z: 0, w: 0.9999993}
-  m_LocalPosition: {x: 335.8, y: 5.53, z: 251.9}
+  m_LocalPosition: {x: 335.8, y: 5.57, z: 710}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4606749608377037}
@@ -15413,12 +15463,40 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2103955350}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2115545588 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2146099518254347429, guid: 3c2cdeab1dfd44644b87fea043356e8b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1808076091}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2135938609 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2146099518523449190, guid: 3c2cdeab1dfd44644b87fea043356e8b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1808076091}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2135938610 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2146099518523449191, guid: 3c2cdeab1dfd44644b87fea043356e8b,
     type: 3}
   m_PrefabInstance: {fileID: 1808076091}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2135938611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2135938609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c7d81026a1a86e45952a150573bf860, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraRig: {fileID: 576565441}
+  upperWaterLevel: {fileID: 978743837}
+  lowerWaterLevel: {fileID: 1177145035}
+  underwaterShader: {fileID: 2115545588}
 --- !u!4 &4606749608377037 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4580439472689322477, guid: bac7346a551020845ae563a2588cd92a,
