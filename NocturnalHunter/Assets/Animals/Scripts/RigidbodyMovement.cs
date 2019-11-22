@@ -3,24 +3,120 @@ using UnityEngine;
 
 public class RigidbodyMovement : MonoBehaviour
 {
-    [Tooltip("The avatars's legs object (containing all its legs as children).")]
-    [SerializeField] private GameObject legs;
+    public enum SpeedMultiplier {
+        Run, Creep, Swim
+    }
 
-    private static readonly float SHARP_PITCH_ANGLE = 70;
+    public class SummedSpeed
+    {
+        private AnimalStats stats;
+        private bool[] flags;
+        private float value, nextValue;
+
+        public float Value {
+            get { return value; }
+            set { }
+        }
+
+        /// <param name="stats">The stats of the animal</param>
+        public SummedSpeed(AnimalStats stats) {
+            this.stats = stats;
+            this.value = stats.WalkSpeed;
+            this.nextValue = stats.WalkSpeed;
+            this.flags = new bool[3];
+        }
+
+        /// <summary>
+        /// Lerp from the current value to the next value smoothly.
+        /// </summary>
+        /// <param name="build">The speed of increase in the acceleration</param>
+        /// <param name="decay">The speed of decrease in the acceleration</param>
+        public void UpdateValue(float build, float decay) {
+            float accelaration = (value < nextValue) ? build : decay;
+            value = Mathf.Lerp(value, nextValue, accelaration * Time.deltaTime);
+        }
+
+        /// <summary>
+        /// Apply a multiplier on the current speed (run / swim / creep).
+        /// </summary>
+        /// <param name="mul">The multiplier to apply</param>
+        /// <param name="flag">True to apply of false to cancel</param>
+        public void ApplyMultiplier(SpeedMultiplier mul, bool flag) {
+            switch (mul) {
+                case SpeedMultiplier.Run:
+                    ChangeSummed(flags[0], flag, stats.runSpeedMultiplier);
+                    flags[0] = flag;
+                    break;
+                case SpeedMultiplier.Creep:
+                    ChangeSummed(flags[1], flag, stats.creepSpeedMultiplier);
+                    flags[1] = flag;
+                    break;
+                case SpeedMultiplier.Swim:
+                    ChangeSummed(flags[2], flag, stats.swimSpeedMultiplier);
+                    flags[2] = flag;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Reset and return to normal walking speed.
+        /// </summary>
+        public void Reset() {
+            ApplyMultiplier(SpeedMultiplier.Run, false);
+            ApplyMultiplier(SpeedMultiplier.Creep, false);
+            ApplyMultiplier(SpeedMultiplier.Swim, false);
+        }
+
+        /// <summary>
+        /// Manually multiply the speed value by a specified amount,
+        /// until it reaches the original value again.
+        /// </summary>
+        /// <param name="multiplier">The amount to multiply the speed value by</param>
+        public void TempMultiply(float multiplier) { value *= multiplier; }
+
+        /// <summary>
+        /// Apply the multiplier on the current value and update its flag.
+        /// </summary>
+        /// <param name="isOn">True if the multiplier is already applied</param>
+        /// <param name="flag">True to apply or false to cancel</param>
+        /// <param name="multiplier">The value of the multiplier</param>
+        private void ChangeSummed(bool isOn, bool flag, float multiplier) {
+            if (isOn && !flag) nextValue /= multiplier;
+            else if (!isOn && flag) nextValue *= multiplier;
+        }
+    }
+
+    [Header("Acceleration")]
+
+    [Tooltip("The maximum velocity magnitude is determined by current speed divided by relativeMaxMagnitude.")]
+    [SerializeField] [Range(1, 100f)] private float relativeMaxMagnitude = 30;
+
+    [Tooltip("The speed of increase in the acceleration.")]
+    [SerializeField] private float accelerationBuild = 1;
+
+    [Tooltip("The speed of decrease in the acceleration.")]
+    [SerializeField] private float accelerationDecay = 10;
+
+    private static readonly float SHARP_SLOPE_ANGLE = 70;
+    private static readonly float MAX_PITCH_ANGLE = 70;
+    private static readonly float MIN_PITCH_TO_JUMP_FORWARD = -20;
+    private static readonly float FALL_SPEED = 1.5f;
     private static readonly float CASUAL_ROTATION_RATE = .5f;
-    private static readonly float INITIAL_ALIGNMENT_TIME = .5f;
     private static readonly float WALK_AFTERTIME = .1f;
+    private static readonly float SOFTEST_SPEED_REDUCE = 1.3f;
+    private static readonly float HARDEST_SPEED_REDUCE = .1f;
 
     private Rigidbody rigidBody;
-    private GameObject[] feet;
     private Transform parentTransform;
     private AnimalStats animalStats;
     private TerrainGlider terrainGlider;
+    private SummedSpeed speed;
+    private Balance balance;
     private Vector3 turnDirection;
     private float defaultYaw;
-    private float initialTurnTimer, jumpTimer, walkTimer;
+    private float jumpTimer, walkTimer;
     private bool rotateTowards, isWalking;
-    private bool doubleRotRate, initialTurn;
+    private bool doubleRotRate;
     private bool requestJump;
 
     public bool IsWalking {
@@ -35,48 +131,74 @@ public class RigidbodyMovement : MonoBehaviour
 
     public bool IsGrounded { get; set; }
 
-    public Vector3 GroundNormal {
-        get { return CalcGroundNormal(); }
-        set { }
-    }
+    public bool IsJumping { get; set; }
 
     private void Start() {
+        this.parentTransform = transform.parent;
         this.rigidBody = GetComponentInParent<Rigidbody>();
         this.animalStats = GetComponent<AnimalStats>();
+        this.balance = GetComponent<Balance>();
         this.terrainGlider = FindObjectOfType<TerrainGlider>();
-        this.defaultYaw = transform.eulerAngles.y;
+        this.defaultYaw = parentTransform.eulerAngles.y;
+        this.speed = new SummedSpeed(animalStats);
         this.jumpTimer = 0;
-        this.parentTransform = transform.parent;
-        parentTransform.forward = Vector3.one;
-
-        this.feet = new GameObject[legs.transform.childCount];
-        for (int i = 0; i < feet.Length; i++)
-            feet[i] = legs.transform.GetChild(i).gameObject;
 
         //initial terrain hugging
-        this.turnDirection = Vector3.Cross(GroundNormal, -parentTransform.right);
+        this.turnDirection = Vector3.Cross(balance.AverageGroundNormal, -parentTransform.right);
         this.rotateTowards = true;
-        this.initialTurnTimer = 0;
     }
 
     private void Update() {
-        CalcGroundNormal();
+        bool underwater = balance.IsStandingOn(Layers.WATER);
+        bool onWayUp = IsJumping && rigidBody.velocity.y > 0;
+        IsGrounded = !onWayUp && balance.IsStandingOn(Layers.GROUND);
+        IsJumping = !IsGrounded;
+        AlignPosture(IsGrounded);
 
-        //make it easier to jump with 0 gravity drag value
-        if (!IsGrounded || requestJump) rigidBody.drag = 0;
+        //make it easier to move with 0 gravity drag value
+        if (!IsGrounded || requestJump || underwater) rigidBody.drag = 0;
+        //adjust drag value to the terrain
+        else if (IsGrounded) terrainGlider.ChangeDragValue(transform, rigidBody, IsWalking);
 
-        //count until the first turn ends
-        if (!initialTurn) initialTurnTimer += Time.deltaTime;
+        //apply swim speed multiplier if the animal is underwater
+        ApplySpeedMultiplier(SpeedMultiplier.Swim, underwater);
 
         //decide if the animal is walking now
         if (walkTimer < WALK_AFTERTIME) walkTimer += Time.deltaTime;
-        else isWalking = false;
-
-        //make it harder to climb terrain steeps
-        if (IsGrounded) terrainGlider.ChangeDragValue(transform, rigidBody, IsWalking);
+        else {
+            isWalking = false;
+            ResetSpeedMultipliers();
+        }
 
         Turn();
         CompleteJumpRequest();
+
+        if (IsGrounded) {
+            rigidBody.velocity = Vector3.zero; //reset velocity
+            speed.UpdateValue(accelerationBuild, accelerationDecay);
+        }
+    }
+
+    /// <returns>The angle in which the animal is pitched (positive is forward).</returns>
+    public float GetPitchAngle() {
+        float pitchAngle = parentTransform.eulerAngles.x;
+        return AngleUtils.TangentiateAngle(pitchAngle);
+    }
+
+    /// <summary>
+    /// Reset all speed multipliers and return to normal walking speed.
+    /// </summary>
+    public void ResetSpeedMultipliers() {
+        speed.Reset();
+    }
+
+    /// <summary>
+    /// Apply a multiplier on the current speed (run / swim / creep).
+    /// </summary>
+    /// <param name="mul">The multiplier to apply</param>
+    /// <param name="flag">True to apply of false to cancel</param>
+    public void ApplySpeedMultiplier(SpeedMultiplier mul, bool flag) {
+        speed.ApplyMultiplier(mul, flag);
     }
 
     /// <summary>
@@ -84,51 +206,55 @@ public class RigidbodyMovement : MonoBehaviour
     /// </summary>
     /// <param name="direction">Normalized direction to move towards</param>
     /// <param name="speed">Movement speed</param>
-    public void Move(Vector3 direction, float speed) {
+    public void Move(Vector3 direction) {
         //tune the direction and make it hug the terrain
-        Vector3 groundNormal = GroundNormal;
-        Vector3 left = Quaternion.AngleAxis(-90, groundNormal) * direction;
+        Vector3 groundNormal = balance.AverageGroundNormal;
+        Vector3 left = Quaternion.AngleAxis(-90f, groundNormal) * direction;
         Vector3 forward = Vector3.Cross(groundNormal, left);
         direction = forward;
 
         //reset walk timer
-        walkTimer = 0;
+        walkTimer = 0f;
         isWalking = true;
 
         //compress the turn direction if it's too radical (180 degrees)
         if (IsOppositeDirection(parentTransform.forward, direction)) {
-            direction = Quaternion.AngleAxis(90, groundNormal) * direction;
+            direction = Quaternion.AngleAxis(90f, groundNormal) * direction;
             doubleRotRate = true; //fasten rotation
         }
 
-        //asign correct and compressed value to the next turn direction
-        if (!initialTurn) {
-            turnDirection = Vector3.Cross(groundNormal, -parentTransform.right);
-            rotateTowards = true;
-        }
-        //first frames of the game
-        else {
-            turnDirection = direction;
-            if (turnDirection.sqrMagnitude > Mathf.Epsilon) rotateTowards = true;
-        }
+        //rotate towards the correct direction
+        turnDirection = direction;
+        if (turnDirection.sqrMagnitude > Mathf.Epsilon) rotateTowards = true;
 
         //apply force against the animal's rigidbody
-        if (IsGrounded && AbsoluteSmallerThan(rigidBody.velocity, 10))
-            rigidBody.AddForce(direction * speed);
+        float maxMagnitude = speed.Value / relativeMaxMagnitude;
+        if (IsGrounded && rigidBody.velocity.magnitude < maxMagnitude)
+            rigidBody.AddForce(direction * speed.Value);
     }
 
     /// <summary>
-    /// Check if a vector's x, y and z absolute values are smaller than a peremeter n (exclusive).
+    /// Straighten the animal's posture according to the ground its standing on,
+    /// or pitch forward if the animal is in mid air.
     /// </summary>
-    /// <param name="vec">The vector to check</param>
-    /// <param name="n">Maximum allowed value (exclusive)</param>
-    /// <returns>True is all absolute values of the vetor are smaller than n.</returns>
-    private bool AbsoluteSmallerThan(Vector3 vec, float n) {
-        float x = Mathf.Abs(vec.x);
-        float y = Mathf.Abs(vec.y);
-        float z = Mathf.Abs(vec.z);
-
-        return x < n && y < n && z < n;
+    /// <param name="grounded">True if the animal is on the ground</param>
+    private void AlignPosture(bool grounded) {
+        //align posture to the ground
+        if (grounded) {
+            Vector3 groundNormal = balance.AverageGroundNormal;
+            Vector3 forwardRot = Vector3.Cross(groundNormal, -parentTransform.right);
+            float deltaTime = Time.deltaTime * 5;
+            parentTransform.forward = Vector3.Lerp(parentTransform.forward, forwardRot, deltaTime);
+        }
+        //pitch forward while in mid air
+        else {
+            Vector3 originalRot = parentTransform.eulerAngles;
+            int direction = (GetPitchAngle() >= MIN_PITCH_TO_JUMP_FORWARD) ? 1 : -1;
+            Vector3 pitchedRotVector3 = new Vector3(MAX_PITCH_ANGLE * direction, originalRot.y, originalRot.z);
+            Quaternion pitchedRot = Quaternion.Euler(pitchedRotVector3);
+            float deltaTime = Time.deltaTime * FALL_SPEED;
+            parentTransform.rotation = Quaternion.Slerp(parentTransform.rotation, pitchedRot, deltaTime);
+        }
     }
 
     /// <summary>
@@ -151,12 +277,9 @@ public class RigidbodyMovement : MonoBehaviour
     /// </summary>
     public void Turn() {
         //cancel rotation
-        bool initial = initialTurnTimer < INITIAL_ALIGNMENT_TIME;
-        if (turnDirection.sqrMagnitude < Mathf.Epsilon || !rotateTowards || !initial) {
+        if (turnDirection.sqrMagnitude < Mathf.Epsilon || !rotateTowards ) {
             doubleRotRate = false;
             rotateTowards = false;
-            initialTurn = true;
-            initialTurnTimer = 0;
             return;
         }
 
@@ -170,9 +293,7 @@ public class RigidbodyMovement : MonoBehaviour
         float rotationPercent = Mathf.Clamp((angleDistance - 10) / (180 - 10) * 100, 0, 100);
 
         //check if the slope is very sharp
-        float pitchAngle = parentTransform.eulerAngles.x;
-        pitchAngle = (pitchAngle > 180) ? pitchAngle - 360 : pitchAngle;
-        bool slipperyFall = pitchAngle > SHARP_PITCH_ANGLE;
+        bool slipperyFall = GetPitchAngle() > SHARP_SLOPE_ANGLE;
         float rotationRate;
 
         //rotation is insignificant
@@ -207,44 +328,23 @@ public class RigidbodyMovement : MonoBehaviour
     private void CompleteJumpRequest() {
         if (!requestJump) return;
 
-        if (jumpTimer >= animalStats.jumpDelay) {
-            jumpTimer = 0;
+        if (jumpTimer < animalStats.jumpDelay) jumpTimer += Time.deltaTime;
+        else {
+            jumpTimer = 0f;
             requestJump = false;
 
             //perform jump
-            float steepPercent = Mathf.Abs(terrainGlider.GetSteepPercent(transform, IsWalking));
+            float steepPercent = terrainGlider.GetSteepPercent(transform, IsWalking); //from -100 to 100
+            float normalPercent = (steepPercent + 100) / 2; //from 0 to 100
             float forceDiff = animalStats.maxJumpForce - animalStats.minJumpForce;
-            float jumpForce = steepPercent * forceDiff / 100 + animalStats.minJumpForce;
-            Vector3 direction = parentTransform.up + (100 - steepPercent) * turnDirection / 100;
-            rigidBody.AddForce(direction * jumpForce);
+            float jumpForce = (100 - normalPercent) * forceDiff / 100 + animalStats.minJumpForce;
+            rigidBody.AddForce(parentTransform.up * jumpForce);
+
+            //reduce speed according to the pitch of the animal
+            float reduceDiff = Mathf.Abs(HARDEST_SPEED_REDUCE - SOFTEST_SPEED_REDUCE);
+            float multiplier = SOFTEST_SPEED_REDUCE - normalPercent * reduceDiff / 100;
+            speed.TempMultiply(multiplier);
+            IsJumping = true;
         }
-
-        jumpTimer += Time.deltaTime;
-    }
-
-    /// <summary>
-    /// Calculate the normal vector of the exact area that the player is currently standing on.
-    /// </summary>
-    /// <returns>The normal vector of the current area.</returns>
-    public Vector3 CalcGroundNormal() {
-        RaycastHit[] hits = new RaycastHit[feet.Length];
-        Vector3 normalizedHit = Vector3.zero;
-        bool feetGrounded = false;
-
-        for (int i = 0; i < hits.Length; i++) {
-            Transform footTransform = feet[i].transform;
-            Vector3 position = footTransform.position;
-            Physics.Raycast(position, -footTransform.up, out hits[i], Layers.GROUND);
-
-            //check if current foot is touching the floor
-            Foot footComponent = feet[i].GetComponent<Foot>();
-            if (!feetGrounded && footComponent.IsGrounded(Layers.GROUND)) feetGrounded = true;
-        }
-
-        //calculate the average value for all of the avatar's legs
-        foreach (RaycastHit hit in hits) normalizedHit += hit.normal;
-
-        IsGrounded = feetGrounded; //update IsGrounded public value
-        return normalizedHit.normalized;
     }
 }

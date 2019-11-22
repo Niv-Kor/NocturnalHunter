@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2146099517549103471}
   - component: {fileID: 2146099517549103457}
   - component: {fileID: 2146099517549103456}
-  m_Layer: 4
+  m_Layer: 0
   m_Name: Bubbles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ ParticleSystem:
   m_GameObject: {fileID: 2146099517549103470}
   serializedVersion: 6
   lengthInSec: 0.05
-  simulationSpeed: 1
+  simulationSpeed: 0.08
   stopAction: 0
   cullingMode: 0
   ringBufferMode: 0
@@ -659,7 +659,7 @@ ParticleSystem:
   ShapeModule:
     serializedVersion: 6
     enabled: 1
-    type: 4
+    type: 10
     angle: 0
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
@@ -746,7 +746,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 1
+      value: 1.13
       mode: 0
       spread: 0
       speed:
@@ -3554,7 +3554,7 @@ ParticleSystem:
         m_NumAlphaKeys: 2
     range: {x: 0, y: 1}
   CollisionModule:
-    enabled: 0
+    enabled: 1
     serializedVersion: 3
     type: 0
     collisionMode: 0
@@ -3562,7 +3562,7 @@ ParticleSystem:
     multiplyColliderForceByParticleSize: 0
     multiplyColliderForceByParticleSpeed: 0
     multiplyColliderForceByCollisionAngle: 1
-    plane0: {fileID: 0}
+    plane0: {fileID: 2146099519494260670}
     plane1: {fileID: 0}
     plane2: {fileID: 0}
     plane3: {fileID: 0}
@@ -3624,7 +3624,7 @@ ParticleSystem:
     m_Bounce:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -3677,7 +3677,7 @@ ParticleSystem:
     m_EnergyLossOnCollision:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 1
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -3727,14 +3727,14 @@ ParticleSystem:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-    minKillSpeed: 0
+    minKillSpeed: 27
     maxKillSpeed: 10000
     radiusScale: 1
     collidesWith:
       serializedVersion: 2
-      m_Bits: 4294967295
+      m_Bits: 16
     maxCollisionShapes: 256
-    quality: 0
+    quality: 2
     voxelSize: 0.5
     collisionMessages: 0
     collidesWithDynamic: 1
@@ -4853,8 +4853,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2146099518523449191}
+  - component: {fileID: 6653006883794942850}
   - component: {fileID: 2135938611}
   - component: {fileID: 2135938612}
+  - component: {fileID: 2257130527974640249}
+  - component: {fileID: 2698512596694594952}
   m_Layer: 4
   m_Name: Pond
   m_TagString: Untagged
@@ -4880,6 +4883,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6653006883794942850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146099518523449190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b0bc2061c9c71c46a53fe084e363b82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 0}
+  upperWaterLevel: {fileID: 2146099517604287689}
+  lowerWaterLevel: {fileID: 2146099519493774238}
 --- !u!114 &2135938611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4889,14 +4907,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 2146099518523449190}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c7d81026a1a86e45952a150573bf860, type: 3}
+  m_Script: {fileID: 11500000, guid: 506821fbf8140914f8450871e73e12a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraRig: {fileID: 0}
   upperWaterLevel: {fileID: 2146099517604287689}
-  lowerWaterLevel: {fileID: 2146099519493774238}
-  underwaterShader: {fileID: 2146099518254347429}
-  bubbles: {fileID: 2146099517549103470}
+  amount: 10
+  plants:
+  - {fileID: 1225893352015746, guid: 6b6e4ba9d84a39b4cad75e1202beb546, type: 3}
+  - {fileID: 1966520115649746, guid: f10c01a0ce40b7742b1f5f3752653313, type: 3}
 --- !u!114 &2135938612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4906,14 +4924,45 @@ MonoBehaviour:
   m_GameObject: {fileID: 2146099518523449190}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e74e6553e754d140813ee2b2cca07c8, type: 3}
+  m_Script: {fileID: 11500000, guid: daa4bb473889083498fb371dd9521a03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 0}
+  upperWaterLevel: {fileID: 2146099517604287689}
+  lowerWaterLevel: {fileID: 2146099519493774238}
+  underwaterShader: {fileID: 2146099518254347429}
+  bubbles: {fileID: 2146099517549103470}
+  depth: 10
+  visualize: 1
+--- !u!114 &2257130527974640249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146099518523449190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b5b72096edccd54697e76ab64602f1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   upperWaterLevel: {fileID: 2146099517604287689}
-  amount: 10
-  plants:
-  - {fileID: 1225893352015746, guid: 6b6e4ba9d84a39b4cad75e1202beb546, type: 3}
-  - {fileID: 1966520115649746, guid: f10c01a0ce40b7742b1f5f3752653313, type: 3}
+  maxDetailDistance: 50
+  minTextureSize: 1
+  maxTextureSize: 256
+--- !u!65 &2698512596694594952
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146099518523449190}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 150.9, y: 71.2, z: 149.83}
+  m_Center: {x: -33, y: -40.2, z: -76.5}
 --- !u!1001 &2146099517604319849
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4931,7 +4980,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 780611a67e8e941a2b3aa96e5915a793, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -4.49
+      value: -4.5
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 780611a67e8e941a2b3aa96e5915a793, type: 3}
       propertyPath: m_LocalPosition.z

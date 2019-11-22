@@ -13,15 +13,11 @@ public class TerrainGlider : MonoBehaviour
     
     private static readonly float LERP_STEP_MULTIPLIER = 10;
 
-    /// <param name="avatarTransform">The transform component of the animal's avatar</param>
+    /// <param name="transform">The transform component of the animal's avatar</param>
     /// <param name="isWalking">True if the animal is currently walking</param>
     /// <returns>Percentage of the animal's steepness on the terrain.</returns>
-    public float GetSteepPercent(Transform avatarTransform, bool isWalking) {
-        //get current pitch angle of the player
-        float pitchAngle = avatarTransform.eulerAngles.x;
-        pitchAngle = (pitchAngle > 180) ? pitchAngle - 360 : pitchAngle;
-
-        //if the player is climbing he is less vulnerable to slipping, and more resistance is being applied
+    public float GetSteepPercent(Transform transform, bool isWalking) {
+        float pitchAngle = AngleUtils.TangentiateAngle(transform.eulerAngles.x);
         bool climbing = pitchAngle < 0 && isWalking;
         int pitchDirection = climbing ? 1 : -1;
         float absAngle = Mathf.Abs(pitchAngle);

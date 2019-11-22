@@ -5,7 +5,6 @@ public class AIFlightBehaviour : MonoBehaviour
     private static readonly float MIN_NODE_DISTANCE = 5;
 
     private RouteManager routeManager;
-    private AnimalStats animalStats;
     private AIStateController stateController;
     private RigidbodyMovement rigidbodyMovement;
     private RouteNodeID nextNode;
@@ -13,7 +12,6 @@ public class AIFlightBehaviour : MonoBehaviour
 
     private void Start() {
         this.routeManager = FindObjectOfType<RouteManager>();
-        this.animalStats = GetComponent<AnimalStats>();
         this.stateController = GetComponent<AIStateController>();
         this.rigidbodyMovement = GetComponent<RigidbodyMovement>();
         this.nextNode = null;
@@ -29,8 +27,8 @@ public class AIFlightBehaviour : MonoBehaviour
         FindRunningPath();
         stateController.RequestMovement(AIStateController.AIMovementMode.Run);
         Vector3 direction = (nextNode.Point - transform.position).normalized;
-        float runSpeed = animalStats.walkSpeed * animalStats.runSpeedMultiplier;
-        rigidbodyMovement.Move(direction, runSpeed);
+        rigidbodyMovement.ApplySpeedMultiplier(RigidbodyMovement.SpeedMultiplier.Run, true);
+        rigidbodyMovement.Move(direction);
     }
 
     public void Run() {

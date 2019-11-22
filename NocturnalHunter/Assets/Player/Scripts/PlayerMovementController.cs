@@ -2,22 +2,21 @@
 
 public class PlayerMovementController : MonoBehaviour
 {
-    [Tooltip("The base of the cameras.")]
-    [SerializeField] private GameObject cameraBase;
+    [Tooltip("The camera rig object.")]
+    [SerializeField] private GameObject cameraRig;
 
     private static readonly string HORIZONTAL_AXIS = "Horizontal";
     private static readonly string VERTICAL_AXIS = "Vertical";
 
     private PlayerStateController playerControl;
     private RigidbodyMovement rigidbodyMovement;
-    private AnimalStats animalStats;
+    private Balance balance;
     private float lastMovement;
     
-
     private void Start() {
         this.rigidbodyMovement = GetComponent<RigidbodyMovement>();
         this.playerControl = GetComponent<PlayerStateController>();
-        this.animalStats = GetComponent<AnimalStats>();
+        this.balance = GetComponent<Balance>();
         this.lastMovement = 0;
     }
 
@@ -29,25 +28,22 @@ public class PlayerMovementController : MonoBehaviour
         bool onMovement = currentMovement > lastMovement;
         float inputVolume = onMovement ? 1 : Mathf.Max(Mathf.Abs(verInput), Mathf.Abs(horInput));
 
-        //calculate the movement speed
-        float movementSpeed = 0;
+        //calculate the movement speed multipliers
         if (!playerControl.MovementLocked) {
-            if (Input.GetKey(KeyCode.LeftShift))
-                movementSpeed = animalStats.walkSpeed * animalStats.runSpeedMultiplier;
-            else if (Input.GetMouseButton(1))
-                movementSpeed = animalStats.walkSpeed * animalStats.creepSpeedMultiplier;
-            else
-                movementSpeed = animalStats.walkSpeed;
+            bool running = Input.GetKey(KeyCode.LeftShift);
+            bool creeping = Input.GetMouseButton(1);
+            rigidbodyMovement.ApplySpeedMultiplier(RigidbodyMovement.SpeedMultiplier.Run, running);
+            rigidbodyMovement.ApplySpeedMultiplier(RigidbodyMovement.SpeedMultiplier.Creep, creeping);
         }
 
         //move to the desired input direction
-        Vector3 groundNormal = rigidbodyMovement.GroundNormal;
-        Vector3 forward = Vector3.Cross(groundNormal, -cameraBase.transform.right);
-        Vector3 right = Vector3.Cross(groundNormal, cameraBase.transform.forward);
+        Vector3 groundNormal = balance.AverageGroundNormal;
+        Vector3 forward = Vector3.Cross(groundNormal, -cameraRig.transform.right);
+        Vector3 right = Vector3.Cross(groundNormal, cameraRig.transform.forward);
         Vector3 moveDirection = Vector3.Normalize(forward * verInput + right * horInput);
         
         //move
-        if (inputVolume > 0) rigidbodyMovement.Move(moveDirection * inputVolume, movementSpeed);
+        if (inputVolume > 0) rigidbodyMovement.Move(moveDirection * inputVolume);
 
         //save last movement for later use
         lastMovement = Mathf.Max(Mathf.Abs(horInput), Mathf.Abs(verInput));
